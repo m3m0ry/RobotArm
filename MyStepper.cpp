@@ -46,7 +46,7 @@ void MyStepper::move(unsigned int steps, const int * lookup){
           // increment or decrement the step number, depending on direction:
           steps_left > 0 ? position++ : position--;
           position = position % steps_per_round;
-          position = position < 0 ? steps_per_round : position;
+          position = position < 0 ? steps_per_round-1 : position;
           // decrement the steps left:
           steps_left >= 0 ? --steps_left : ++steps_left;
           // step the motor to step number 0, 1, ..., {3 or 10}
