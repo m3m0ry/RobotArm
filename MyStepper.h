@@ -15,11 +15,12 @@ class MyStepper {
 
   void step(int steps_to_move);
 	void move(unsigned int steps=1, const int* lookup = full_step);
+  int left() const;
 
  private:
   void stepMotor(unsigned int this_step, const int* lookup = full_step);
 
-  unsigned long step_delay;
+  unsigned long step_delay = 10;
   int steps_per_round;
   int position = 0;
   int steps_left = 0;

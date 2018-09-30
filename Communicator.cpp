@@ -18,27 +18,36 @@ Communicator::~Communicator(){
   0 | Arm | steps -> move arm
  */
 
-int Communicator::recieve(MyStepper* steppers, size_t stepper_count){
-  Serial.println("read something");
-  return 0;
-
-  switch(Serial.read()){
-  case -1:
+int Communicator::recieve(const MyStepper* steppers[], size_t stepper_count){
+  long command = -1;
+  if(Serial.available())
+    command = Serial.parseInt();
+  if (command == -1)
     return -1;
-
-  case 0:
-    int stepper = Serial.read();
-    if(stepper == -1)
-      return -1;
-
-    char steps[2];
-    if(Serial.readBytes(steps, 2) != 2)
-      return -1;
-    int steps_int = (int)steps[0] | ((int)steps[1] << 8);
-    Serial.println(steps_int);
-
-
-    break;
+  else if (command == 0){
+    debug("Command Moving Arm");
+    long stepper = Serial.parseInt();
+    long steps = Serial.parseInt();
+    debug("Moving Stepper");
+    Serial.println(stepper);
+    steppers[stepper]->step(steps);
+    Serial.println(steppers[stepper]->left());
   }
+  else{
+    Serial.println("general kenobi");
+  }
+
   return 0;
 }
+
+void Communicator::debug(const char * const message){
+  Serial.print("[DEBUG]: ");
+  Serial.println(message);
+}
+
+void Communicator::warn(const char* const message){
+  Serial.print("[WARN]: ");
+  Serial.println(message);
+}
+
+

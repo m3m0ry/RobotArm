@@ -8,7 +8,7 @@ const int MyStepper::half_step[8] = {B1000, B1100, B0100, B0110, B0010, B0011, B
 
 MyStepper::MyStepper(int motor_pin_1, int motor_pin_2, int motor_pin_3, int motor_pin_4, int steps_per_round)
 {
-	steps_per_round = steps_per_round; // total number of steps for this motor
+	this->steps_per_round = steps_per_round; // total number of steps for this motor
 
 	// Arduino pins for the motor control connection:
 	motor_pin[0] = motor_pin_1;
@@ -35,6 +35,7 @@ void MyStepper::step(int steps_to_move)
 
 void MyStepper::move(unsigned int steps, const int * lookup){
   // decrement the number of steps, moving one step each time:
+  //Serial.println(abs(steps_left));
   for(; steps > 0 && abs(steps_left) > 0; --steps)
     {
       unsigned long now = micros();
@@ -54,12 +55,16 @@ void MyStepper::move(unsigned int steps, const int * lookup){
     }
 }
 
+int MyStepper::left() const{
+  return steps_left;
+}
+
 /*
  * Moves the motor forward or backwards.
  */
 void MyStepper::stepMotor(unsigned int thisStep, const int* lookup){
   size_t n = sizeof(lookup)/sizeof(lookup[0]);
-  for(size_t i = 0; i < n; ++i)
-    digitalWrite(motor_pin[i], bitRead(lookup[thisStep%n],i));
+  for(size_t i = 0; i < 4; ++i)
+    digitalWrite(motor_pin[i], bitRead(lookup[thisStep%4],i));
 }
 
