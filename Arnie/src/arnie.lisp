@@ -1,6 +1,5 @@
 (defpackage #:arnie
-  (:use :cl :bordeaux-threads)
-  (:shadowing-import-from :cserial-port)
+  (:use :cl)
   (:export #:connect #:disconnect #:kill-reader #:repl))
 
 (in-package :arnie)
@@ -28,14 +27,14 @@
     (setf *arduino* nil)))
 
 (defun kill-reader ()
-  (when (bordeaux-threads:thread-alive-p *reader*)
-    (bordeaux-threads:destroy-thread *reader*))
+  (when (bt:thread-alive-p *reader*)
+    (bt:destroy-thread *reader*))
   (setf *reader* nil))
 
 (defun repl ()
   (connect)
   (when (null *reader*)
-    (setf *reader* (bordeaux-threads:make-thread #'reading)))
+    (setf *reader* (bt:make-thread #'reading)))
   ;TODO catch EOF and break
   (loop for line = (string (read-line))
         do (cserial-port:write-serial-string line *arduino*))
