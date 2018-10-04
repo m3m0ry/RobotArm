@@ -15,7 +15,7 @@
           when (char/= c #\Return)
             do (push c l)
             and
-              when (char= c stop-char) do (return (coerce (reverse l) 'string))));)
+              when (char= c stop-char) do (return (coerce (reverse l) 'string))))
 
 (defun connect ( &key (name "/dev/ttyACM0") (baud-rate 115200))
   (when (null *arduino*)
