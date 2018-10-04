@@ -39,6 +39,7 @@
   ;TODO catch EOF and break
   (loop for line = (string (read-line))
         do (cserial-port:write-serial-string line *arduino*))
+  (kill-reader)
   (disconnect))
 
 (defun reading()
