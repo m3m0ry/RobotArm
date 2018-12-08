@@ -16,7 +16,7 @@
             and
               when (char= c stop-char) do (return (coerce (reverse l) 'string))))
 
-(defun connect ( &key (name "/dev/ttyACM0") (baud-rate 115200))
+(defun connect ( &key (name "/dev/ttyACM0") (baud-rate 9600))
   (when (null *arduino*)
     (setf *arduino*
           (cserial-port:open-serial name :baud-rate baud-rate))))
