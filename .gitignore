@@ -1,2 +1,5 @@
 *.fasl
 bin
+board_info.txt
+*.hex
+*.elf

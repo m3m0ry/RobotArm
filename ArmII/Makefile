@@ -1,70 +1,51 @@
-### DISCLAIMER
-### This is an example Makefile and it MUST be configured to suit your needs.
-### For detailed explanations about all of the available options, please refer
-### to https://github.com/sudar/Arduino-Makefile/blob/master/arduino-mk-vars.md
-### Original project where this Makefile comes from: https://github.com/WeAreLeka/Bare-Arduino-Project
+# Makefile for compiling arduino sketches with arduino-cli
+# You need:
+# - arduino-cli: https://github.com/arduino/arduino-cli
+# - jq: https://stedolan.github.io/jq/
 
-### PROJECT_DIR
-### This is the path to where you have created/cloned your project
+
+# Directory of project
 PROJECT_DIR       = $(HOME)/git/RobotArm/ArmII
+SKETCH						= $(shell basename $(PROJECT_DIR))
+# Location of arduino-cli
+ARDUINO_CLI				= arduino-cli
+# Command line json parser
+JQ								= jq
+# Information about board. File is created with `make board-info`
+BOARD_INFO				= board_info.txt
 
-### ARDUINO_RELATED
-### Path to all arduino related things, which i can't use from the debian repository.
-ARDUINO_RELATED		= $(HOME)/arduino
+BOARD							= $(shell jq .serialBoards[0].fqbn $(BOARD_INFO))
+PORT							= $(shell jq .serialBoards[0].port $(BOARD_INFO))
+PROJECT						= $(SKETCH).$(BOARD)
 
-### ARDMK_DIR
-### Path to the Arduino-Makefile directory.
-ARDMK_DIR         = $(ARDUINO_RELATED)/Arduino-Makefile
-#ARDMK_DIR         = $(PROJECT_DIR)/Arduino-Makefile
+.PHONY: build update clean upload board-info status
 
-### ARDUINO_DIR
-### Path to the Arduino application and resources directory.
-ARDUINO_DIR       = $(ARDUINO_RELATED)/arduino
+build:
+	$(info ##### COMPILE $(SKETCH) in $(PROJECT_DIR))
+	$(ARDUINO_CLI) compile --warnings all -v --fqbn $(BOARD) $(PROJECT_DIR) -o $(PROJECT)
 
-### USER_LIB_PATH
-### Path to where the your project's libraries are stored.
-USER_LIB_PATH    :=  $(PROJECT_DIR)/lib
+status:
+	$(info ##### STATUS)
+	$(info - [PROJECT_DIR]		${PROJECT_DIR})
+	$(info - [SKETCH]		${SKETCH})
+	$(info - [ARDUINO_CLI]		${ARDUINO_CLI})
+	$(info - [JQ]			${JQ})
+	$(info - [BOARD_INFO]		${BOARD_INFO})
+	$(info - [BOARD]		${BOARD})
+	$(info - [PORT]		${PORT})
 
-### BOARD_TAG
-### It must be set to the board you are currently using. (i.e uno, mega2560, etc.)
-BOARD_TAG         = mega
-BOARD_SUB					= atmega2560
+update:
+	$(info ##### UPDATE index)
+	$(ARDUINO_CLI) core update-index
 
-### MONITOR_BAUDRATE
-### It must be set to Serial baudrate value you are using.
-MONITOR_BAUDRATE  = 9600
+clean:
+	$(info ##### CLEAN)
+	rm $(SKETCH).$(BOARD).elf $(SKETCH).$(BOARD).hex
 
-### AVR_TOOLS_DIR
-### Path to the AVR tools directory such as avr-gcc, avr-g++, etc.
-#AVR_TOOLS_DIR     = /usr
+upload:
+	$(info ##### UPLOAD)
+	$(ARDUINO_CLI) upload -v -p $(PORT) --fqbn $(BOARD) -i $(PROJECT)  $(PROJECT_DIR)
 
-### AVRDUDE
-### Path to avrdude directory.
-AVRDUDE          = /usr/bin/avrdude
-
-### CFLAGS_STD
-### Set the C standard to be used during compilation. Documentation (https://github.com/WeAreLeka/Arduino-Makefile/blob/std-flags/arduino-mk-vars.md#cflags_std)
-#CFLAGS_STD        = -std=c99
-
-### CXXFLAGS_STD
-### Set the C++ standard to be used during compilation. Documentation (https://github.com/WeAreLeka/Arduino-Makefile/blob/std-flags/arduino-mk-vars.md#cxxflags_std)
-CXXFLAGS_STD      = -std=c++17
-
-### CXXFLAGS
-### Flags you might want to set for debugging purpose. Comment to stop.
-CXXFLAGS         += -pedantic -Wextra -fms-extensions
-
-### MONITOR_PORT
-### The port your board is connected to. Using an '*' tries all the ports and finds the right one.
-MONITOR_PORT      = /dev/ttyACM0
-
-### CURRENT_DIR
-### Do not touch - used for binaries path
-CURRENT_DIR       = $(shell basename $(CURDIR))
-
-### OBJDIR
-### This is where you put the binaries you just compile using 'make'
-OBJDIR            = $(PROJECT_DIR)/bin/$(BOARD_TAG)/$(CURRENT_DIR)
-
-### Do not touch - the path to Arduino.mk, inside the ARDMK_DIR
-include $(ARDMK_DIR)/Arduino.mk
+board-info:
+	$(info ##### BOARD INFO)
+	$(ARDUINO_CLI) board list --format json > $(BOARD_INFO)
