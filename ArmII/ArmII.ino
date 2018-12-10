@@ -77,7 +77,7 @@ STRINGLESS, STRINGGREATER, SORT, STRINGFN, CONCATENATE, SUBSEQ, READFROMSTRING, 
 PRIN1TOSTRING, LOGAND, LOGIOR, LOGXOR, LOGNOT, ASH, LOGBITP, EVAL, GLOBALS, LOCALS, MAKUNBOUND, BREAK,
 READ, PRIN1, PRINT, PRINC, TERPRI, READBYTE, READLINE, WRITEBYTE, WRITESTRING, WRITELINE, RESTARTI2C, GC,
 ROOM, SAVEIMAGE, LOADIMAGE, CLS, PINMODE, DIGITALREAD, DIGITALWRITE, ANALOGREAD, ANALOGWRITE, DELAY,
-MILLIS, SLEEP, NOTE, EDIT, PPRINT, PPRINTALL, ENDFUNCTIONS };
+MILLIS, SLEEP, NOTE, EDIT, PPRINT, PPRINTALL, DELAYMICROSECONDS, ENDFUNCTIONS };
 
 // Typedefs
 
@@ -2671,6 +2671,12 @@ object *fn_pprintall (object *args, object *env) {
 }
 
 // Insert your own function definitions here
+object *fn_delayMicroseconds (object *args, object *env) {
+  (void) env;
+  object *arg1 = first(args);
+  delayMicroseconds(integer(arg1));
+  return arg1;
+}
 
 // Built-in procedure names - stored in PROGMEM
 
@@ -2830,6 +2836,8 @@ const char string152[] PROGMEM = "note";
 const char string153[] PROGMEM = "edit";
 const char string154[] PROGMEM = "pprint";
 const char string155[] PROGMEM = "pprintall";
+const char string156[] PROGMEM = "delayMicroseconds";
+
 
 const tbl_entry_t lookup_table[] PROGMEM = {
   { string0, NULL, NIL, NIL },
@@ -2988,6 +2996,7 @@ const tbl_entry_t lookup_table[] PROGMEM = {
   { string153, fn_edit, 1, 1 },
   { string154, fn_pprint, 1, 2 },
   { string155, fn_pprintall, 0, 0 },
+  { string156, fn_delayMicroseconds, 1, 1 },
 };
 
 // Table lookup functions
