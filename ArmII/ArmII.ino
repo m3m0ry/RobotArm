@@ -12,11 +12,11 @@
 #define serialmonitor
 // #define printgcs
 // #define sdcardsupport
-// #define lisplibrary
+#define lisplibrary
 
 // Includes
 
-// #include "LispLibrary.h"
+#include "LispLibrary.h"
 #include <avr/sleep.h>
 #include <setjmp.h>
 #include <SPI.h>
