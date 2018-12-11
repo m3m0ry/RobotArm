@@ -12,9 +12,10 @@ const char LispLibrary[] PROGMEM =
 (defun motor (steps motor)\
   (let ((m (nth motor *motors*))\
         (step-length (length *step-pattern*))\
-        (orientation (nth motor *orientations*)))\
-    (dotimes (x steps)\
-      (setf orientation (mod (1+ orientation) step-length))\
+        (orientation (nth motor *orientations*))\
+        (1+- (if (plusp steps) 1 -1)))\
+    (dotimes (x (abs steps))\
+      (setf orientation (mod (+ 1+- orientation) step-length))\
       (mapc #'digitalwrite m (nth orientation *step-pattern*))\
       (delayMicroseconds 2500))\
     (setf (nth motor *orientations*) orientation)))\
